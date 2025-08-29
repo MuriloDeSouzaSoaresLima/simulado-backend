@@ -3,8 +3,8 @@ import { Turma } from "../model/Turma";
 
 interface TurmaDTO {
     idTreinamento: number;
-    dataInicio: Date;
-    dataFim: Date;
+    dataInicio: string; // string do JSON que será convertida
+    dataFim: string;     // string do JSON que será convertida
     cargaHoraria: number;
 }
 
@@ -23,7 +23,13 @@ export class TurmaController {
     static async nova(req: Request, res: Response): Promise<void> {
         try {
             const dados: TurmaDTO = req.body;
-            const t = new Turma(dados.idTreinamento, dados.dataInicio, dados.dataFim, dados.cargaHoraria);
+
+            // Converte as strings recebidas em objetos Date
+            const dataInicio = new Date(dados.dataInicio);
+            const dataFim = new Date(dados.dataFim);
+
+            const t = new Turma(dados.idTreinamento, dataInicio, dataFim, dados.cargaHoraria);
+
             const sucesso = await Turma.nova(t);
             if (sucesso) res.status(200).json({ mensagem: "Turma cadastrada" });
             else res.status(400).json({ mensagem: "Erro ao cadastrar turma" });
@@ -37,8 +43,13 @@ export class TurmaController {
         try {
             const dados: TurmaDTO = req.body;
             const id = parseInt(req.query.id as string);
-            const t = new Turma(dados.idTreinamento, dados.dataInicio, dados.dataFim, dados.cargaHoraria);
+
+            const dataInicio = new Date(dados.dataInicio);
+            const dataFim = new Date(dados.dataFim);
+
+            const t = new Turma(dados.idTreinamento, dataInicio, dataFim, dados.cargaHoraria);
             t.setIdTurma(id);
+
             const sucesso = await Turma.atualizar(t);
             if (sucesso) res.status(200).json({ mensagem: "Turma atualizada" });
             else res.status(400).json({ mensagem: "Erro ao atualizar turma" });
