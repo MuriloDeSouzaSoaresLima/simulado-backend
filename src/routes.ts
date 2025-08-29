@@ -3,6 +3,8 @@ import { SERVER_ROUTES } from "./appConfig";
 import {ColaboradorController} from "./controller/ColaboradorController";
 import {TreinamentoController} from "./controller/TreinamentoController";
 import {TurmaController} from "./controller/TurmaController";
+import UsuarioController from "./controller/UsuarioController";
+import  {upload} from "./config/multerConfig" // caminho pode variar dependendo da estrutura
 import { Auth } from './auth/Auth';
 
 const router = express.Router();
@@ -29,8 +31,9 @@ router.post(SERVER_ROUTES.NOVO_TURMA, TurmaController.nova);
 router.put(SERVER_ROUTES.ATUALIZAR_TURMA, TurmaController.atualizar);
 router.put(SERVER_ROUTES.REMOVER_TURMA, TurmaController.remover);
 
+// Cadastro de Usuário com Upload de Imagem de Perfil
+router.post(SERVER_ROUTES.NOVO_USUARIO, upload.single('imagemPerfil'), UsuarioController.cadastrar);
 router.post('/login', Auth.validacaoUsuario);
 //atualizar para bycript
 router.post('/atualizar-senhas', Auth.atualizarSenhasComBcrypt);
-
 export { router }
