@@ -49,3 +49,36 @@ VALUES
 (1, '2025-09-01', '2025-09-02', 8),
 (2, '2025-09-05', '2025-09-05', 6),
 (3, '2025-09-10', '2025-09-10', 4);
+
+-- Ativar extensão pgcrypto antes de usar digest
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
+
+-- Criação da tabela Usuario
+CREATE TABLE IF NOT EXISTS usuario (
+    id_usuario SERIAL PRIMARY KEY,
+    uuid UUID DEFAULT gen_random_uuid() NOT NULL,
+    nome VARCHAR(70) NOT NULL,
+    username VARCHAR(50) UNIQUE NOT NULL,
+    email VARCHAR(50) UNIQUE NOT NULL,
+    senha VARCHAR(255) NOT NULL,
+    status_usuario BOOLEAN DEFAULT true,
+    imagem_perfil VARCHAR(100)
+);
+
+-- Inserção de usuários (senha será gerada manualmente)
+INSERT INTO usuario (nome, username, email, senha) 
+VALUES
+('João Silva', 'joao.silva', 'joao.silva@email.com', '123456'),
+('Maria Oliveira', 'maria.oliveira', 'maria.oliveira@email.com', '123456'),
+('Carlos Souza', 'carlos.souza', 'carlos.souza@email.com', '123456');
+
+-- Atualizar senhas com hash SHA1 (correto com conversão)
+UPDATE usuario 
+SET senha = encode(digest(convert_to(senha, 'UTF8'), 'sha1'), 'hex');
+
+-- Remover trigger antiga se ainda existir
+DROP TRIGGER IF EXISTS trigger_gerar_senha ON usuario;
+DROP FUNCTION IF EXISTS gerar_senha_padrao;
+
+-- Verificar resultado
+SELECT * FROM usuario;
